@@ -3,9 +3,6 @@
 \name{ef_brazil_cetesb}
 \alias{ef_brazil_cetesb}
 \title{Running exhaust emissions factors for buses from Brazil (CETESB)}
-\source{
-\url{https://cetesb.sp.gov.br/veicular/relatorios-e-publicacoes/}
-}
 \usage{
 ef_brazil_cetesb(pollutant, veh_type, model_year, as_list = TRUE)
 }
@@ -31,7 +28,7 @@ data.table. Emission factors in units 'g/km' by model_year.
 }
 \description{
 Returns a vector or \code{data.table} of emission factors for buses based on
-estimates from the  \href{https://cetesb.sp.gov.br/veicular/}{Environment Company of Sao Paulo, Brazil (CETESB) 2019}.
+estimates from the  Environment Company of Sao Paulo, Brazil (CETESB) 2019.
 Emission factor estimates are expressed in units 'g/km'.
 }
 \details{
@@ -66,6 +63,7 @@ Other Emission factor model:
 \code{\link{ef_europe_emep}()},
 \code{\link{ef_scaled_euro}()},
 \code{\link{ef_usa_emfac}()},
-\code{\link{ef_usa_moves}()}
+\code{\link{ef_usa_moves}()},
+\code{\link{emi_europe_emep_wear}()}
 }
 \concept{Emission factor model}

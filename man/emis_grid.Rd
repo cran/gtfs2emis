@@ -39,8 +39,8 @@ by time of the day.
 }
 \examples{
 \donttest{
-library(gtfs2emis)
-library(gtfstools)
+if (requireNamespace("gtfstools", quietly=TRUE)) {
+library(sf)
 
 # read GTFS
 gtfs_file <- system.file("extdata/bra_cur_gtfs.zip", package = "gtfs2emis")
@@ -82,6 +82,7 @@ emi_grid <- emis_grid( emi_list,grid,'day')
 plot(grid)
 plot(emi_grid["PM10_2010"],add = TRUE)
 plot(st_geometry(emi_list$tp_model), add = TRUE,col = "black")
+}
 }
 }
 \seealso{

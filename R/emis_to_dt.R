@@ -15,15 +15,16 @@
 #'        to pollutants. Default is 'pollutant'.
 #' @param segment_vars character. data.frame names of 'emi_list' object 
 #'        attributed to the road segments. Default is NULL.
-#' 
+#' @param process_vars character. data.frame names of 'emi_list' object 
+#'        attributed to the emission processes. Default is 'process'.
+#'        
 #' @return data.table.
 #' 
 #' @family emission analysis
 
 #' @examples
 #' \donttest{
-#' library(gtfs2emis)
-#' library(gtfstools)
+#'  if (requireNamespace("gtfstools", quietly=TRUE)) {
 #' 
 #' # read GTFS
 #' gtfs_file <- system.file("extdata/bra_cur_gtfs.zip", package = "gtfs2emis")
@@ -57,12 +58,18 @@
 #' # convert emission list to data.table
 #' dt <- emis_to_dt(emi_list)
 #' }
+#' }
 #' @export
 emis_to_dt <- function(emi_list, emi_vars = "emi", veh_vars = "veh_type"
-                       , pol_vars = "pollutant", segment_vars = NULL){
+                       , pol_vars = "pollutant", process_vars = "process", segment_vars = NULL){
   
   
-  
+  # emi_list = cur_local_ef
+  # emi_vars = "EF"
+  # veh_vars = "veh_type"
+  # pol_vars = "pollutant"
+  # process_vars = "process"
+  # segment_vars = NULL
   # checkings -----
   checkmate::assert_list(emi_list, null.ok = FALSE)
   # emi_vars
@@ -77,12 +84,14 @@ emis_to_dt <- function(emi_list, emi_vars = "emi", veh_vars = "veh_type"
   checkmate::assert_vector(pol_vars,any.missing = FALSE,min.len = 1,null.ok = FALSE)
   checkmate::assert_character(pol_vars,any.missing = FALSE,min.len = 1)
   for(i in pol_vars) checkmate::assert_choice(i,names(emi_list),null.ok = FALSE)
+  # process
+  checkmate::assert_vector(process_vars,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  checkmate::assert_character(process_vars,any.missing = FALSE,min.len = 1)
+  for(i in process_vars) checkmate::assert_choice(i,names(emi_list),null.ok = FALSE)
   # segment_vars
   checkmate::assert_vector(segment_vars,any.missing = FALSE,min.len = 1,null.ok = TRUE)
   checkmate::assert_character(segment_vars,any.missing = FALSE,min.len = 1,null.ok = TRUE)
   for(i in segment_vars) checkmate::assert_choice(i,names(emi_list),null.ok = FALSE)
-  # all variables
-  all_vars = c(veh_vars, pol_vars,emi_vars)
   
   # check units 
   myunits <- sapply(seq_along(emi_list[[emi_vars]]),function(i){
@@ -95,45 +104,51 @@ emis_to_dt <- function(emi_list, emi_vars = "emi", veh_vars = "veh_type"
     stop("Invalid units: units are not the same for all emissions columns")
   }
   
-  #
-  # merge------
-  #
-  
-  dt <- lapply(1:length(emi_list[[pol_vars]]),function(i){ # i = 3
-    
-    # add vars
-    tmp_dt <- lapply(all_vars,function(j){ # j = 3;i = 3
-      emi_list[[j]][[i]]
+  # expand process values
+  if(!is.null(pol_vars)){
+    rep_pol <- lapply(pol_vars,function(i){ # i = pol_vars
+      tmp_rep <- rep(emi_list[[i]],each = length(emi_list[[veh_vars[1]]]))
+      #tmp_rep <- rep(emi_list[[i]],each = length(emi_list[[process_vars[1]]]))
+      tmp_rep <- rep(tmp_rep,length(emi_list[[process_vars[1]]]))
     })
-    
-    if(!is.null(segment_vars)){
-      tmp_dt <- do.call(c, list(tmp_dt, emi_list[segment_vars]))
-      tmp_dt <- do.call(cbind,tmp_dt)
-      tmp_dt <- data.table::as.data.table(tmp_dt)
-      names(tmp_dt) <- c(all_vars,segment_vars)
-    }else{
-      tmp_dt <- do.call(cbind,tmp_dt)
-      tmp_dt <- data.table::as.data.table(tmp_dt)
-      names(tmp_dt) <- all_vars
+  }
+  if(!is.null(veh_vars)){
+    rep_veh <- lapply(veh_vars,function(i){ # i = veh_type
+      rep(emi_list[[i]],length(emi_list[[process_vars[1]]]) * length(emi_list[[pol_vars[1]]]))
+    })
+  }
+  if(!is.null(process_vars)){
+    rep_pro <- lapply(process_vars,function(i){ # i = veh_type
+      rep(emi_list[[i]],each = length(emi_list[[veh_vars[1]]]) * length(emi_list[[pol_vars[1]]]))
+    })
+  }
+  for(i in emi_vars){ # i = "EF"
+    if("units" %in% class(emi_list[[i]])){
+      emi_list[[i]] <- data.table::as.data.table(emi_list[[i]])
     }
+  }
+  # merge------
+  tmp_dt <- lapply(seq_along(emi_list[[emi_vars]]),function(i){ # i = 1
     
-    
-    # convert columns
-    
-    tmp_dt[,segment_id := 1:nrow(tmp_dt)]
-    if(!is.null(emi_vars))      tmp_dt[,(emi_vars) := lapply(.SD, as.numeric), .SDcols = emi_vars]
-    if(!is.null(veh_vars))      tmp_dt[,(veh_vars) := lapply(.SD, as.factor), .SDcols = veh_vars]
-    if(!is.null(segment_vars))  tmp_dt[,(segment_vars) := lapply(.SD, as.numeric), .SDcols = segment_vars]
-    if(!is.null(pol_vars))      tmp_dt[,(pol_vars) := lapply(.SD, as.character), .SDcols = pol_vars]
+    # variables (emi)
+    tmp_dt <- emi_list[[emi_vars]][,.SD,.SDcols = i]
+    names(tmp_dt) <- emi_vars
+    # variables (pol, veh)
+    if(!is.null(veh_vars))     for(j in seq_along(rep_veh)) tmp_dt[,(veh_vars[j]) := rep_veh[[j]][i]]
+    if(!is.null(pol_vars))     for(j in seq_along(rep_pol)) tmp_dt[,(pol_vars[j]) := rep_pol[[j]][i]]
+    if(!is.null(process_vars)) for(j in seq_along(rep_pro)) tmp_dt[,(process_vars[j]) := rep_pro[[j]][i]]
+    # variables (segment)
+    if(!is.null(segment_vars)){
+      for(j in seq_along(segment_vars)){
+        tmp_dt[,(segment_vars[j]) := emi_list[[segment_vars[j]]]]
+      }
+    }
     return(tmp_dt)
-  }) 
-  dt <- data.table::rbindlist(dt)
-  
-  # add units back ----
-  
-  units(dt[[emi_vars]]) <- myunits
-  
-  # return
-  
-  return(dt)
+  })
+  tmp_dt <- data.table::rbindlist(tmp_dt)
+  # rename
+  all_vars = c(veh_vars, pol_vars,emi_vars,process_vars)
+  data.table::setcolorder(tmp_dt,neworder = all_vars[!is.null(all_vars)])
+  # export
+  return(tmp_dt)
 }

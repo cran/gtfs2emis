@@ -12,7 +12,8 @@
 #'        vehicle characteristics. Default is 'veh_type'.
 #' @param segment_vars character. data.frame names of 'emi_list' object 
 #'        attributed to the road segments. Default is NULL.
-#'  
+#' @param process_vars character. data.frame names of 'emi_list' object 
+#'        attributed to the emission processes. Default is 'process'.
 #' @return `data.table` with pollutants units ('g') aggregated by pollutant, 
 #'          time, or vehicle type.
 #' 
@@ -20,9 +21,7 @@
 #' 
 #' @examples
 #' \donttest{
-#' 
-#' library(gtfs2emis)
-#' library(gtfstools)
+#' if (requireNamespace("gtfstools", quietly=TRUE)) {
 #' 
 #' # read GTFS
 #' gtfs_file <- system.file("extdata/irl_dub_gtfs.zip", package = "gtfs2emis")
@@ -69,11 +68,13 @@
 #'              , by = "time"
 #'              , segment_vars = "slope") 
 #' }
+#' }
 #' @export
 emis_summary <- function(emi_list, 
                          by = "pollutant", 
                          veh_vars = "veh_type", 
-                         segment_vars = NULL){
+                         segment_vars = NULL,
+                         process_vars = "process"){
   
   # A) Checking inputs -----
   
@@ -133,6 +134,7 @@ emis_summary <- function(emi_list,
                        , veh_vars = veh_vars
                        , pol_vars = "pollutant"
                        , segment_vars =  if(by == "time"){my_var}else{segment_vars}
+                       , process_vars = process_vars
   )
   
   
@@ -140,17 +142,17 @@ emis_summary <- function(emi_list,
   if(by == "pollutant"){
     if(!is.null(segment_vars)){
       tmp_dt <- tmp_dt[,lapply(.SD,sum,na.rm = TRUE)
-                       ,by = c("pollutant",segment_vars)
+                       ,by = c("pollutant",segment_vars,process_vars)
                        ,.SDcols = c("emi")]
       
     }else{
       tmp_dt <- tmp_dt[,lapply(.SD,sum,na.rm = TRUE)
-                       ,by = c("pollutant")
+                       ,by = c("pollutant",process_vars)
                        ,.SDcols = c("emi")]
     }
   }else{
     tmp_dt <- tmp_dt[,lapply(.SD,sum,na.rm = TRUE)
-                     ,by = c(my_var,"pollutant")
+                     ,by = c(my_var,"pollutant",process_vars)
                      ,.SDcols = c("emi")]
   }
   

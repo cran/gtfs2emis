@@ -3,7 +3,7 @@
 #' 
 #' @description 
 #' Returns a vector or `data.table` of emission factors for buses based on 
-#' estimates from the  [Environment Company of Sao Paulo, Brazil (CETESB) 2019](https://cetesb.sp.gov.br/veicular/).
+#' estimates from the  Environment Company of Sao Paulo, Brazil (CETESB) 2019.
 #' Emission factor estimates are expressed in units 'g/km'.
 #'
 #' @param pollutant character. Pollutants "CH4", "CO2", "PM10", "N2O", "NOx",
@@ -38,8 +38,7 @@
 #' air pollutant emission inventory guidebook.
 #' 2) Also, the emission factors were extended till 50 years of use, repeating the oldest value.
 #' @md
-#' @source \url{https://cetesb.sp.gov.br/veicular/relatorios-e-publicacoes/}
-#' 
+#'
 #' @family Emission factor model
 #' 
 #' @examples
@@ -102,10 +101,11 @@ ef_brazil_cetesb <- function(pollutant, veh_type, model_year, as_list = TRUE){
   # return in a data.table/list like format----
   
   # export list
-  ef_final <- list("pollutant"   = rep(pollutant,each = length(veh_type))
-                   ,"veh_type"   = rep(veh_type,length(pollutant))
-                   ,"model_year" = rep(model_year,length(pollutant))
-                   ,"EF"         = ef_final_dt)
+  ef_final <- list("pollutant"   = pollutant
+                   ,"veh_type"   = veh_type
+                   ,"model_year" = model_year
+                   ,"EF"         = ef_final_dt
+                   ,"process"    = "hot_exhaust")
   
   # export DT
   if(!as_list){

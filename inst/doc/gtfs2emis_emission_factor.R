@@ -1,11 +1,18 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>")
 
-## -----------------------------------------------------------------------------
-library(gtfs2emis)
+## ----message = FALSE, echo = FALSE--------------------------------------------
+#library(devtools)
+#devtools::load_all()
+
+## ----eval = FALSE,message = FALSE---------------------------------------------
+#  #library(gtfs2emis)
+
+## ----message = FALSE----------------------------------------------------------
 library(units)
+library(gtfs2emis)
 library(ggplot2)
 
 
@@ -28,7 +35,7 @@ ef_europe_dt <- emis_to_dt(emi_list = ef_europe
                            ,segment_vars = c("slope","load","speed"))
 head(ef_europe_dt)
 
-## ---- fig.height=4, fig.width=7-----------------------------------------------
+## ----fig.height=4, fig.width=7------------------------------------------------
 ef_europe_dt$name_fleet <- paste(ef_europe_dt$veh_type, "/ Euro"
                                  , ef_europe_dt$euro)
 
@@ -92,7 +99,7 @@ cur_scaled_ef_dt <- emis_to_dt(emi_list = cur_scaled_ef
                                ,segment_vars = "speed")
 cur_scaled_ef_dt$source <- "Scaled EF"
 
-## ---- fig.width=6, fig.height=5-----------------------------------------------
+## ----fig.width=6, fig.height=5------------------------------------------------
 # rbind data
 cur_ef <- rbind(cur_euro_ef_dt, cur_scaled_ef_dt)
 cur_ef$source <- factor(cur_ef$source
@@ -107,9 +114,10 @@ ggplot() +
   # add local EF
   geom_hline(aes(yintercept = cur_local_ef_dt$EF)
             ,colour = "black",linetype="dashed") + 
-  geom_point(aes(x = 19,y = cur_local_ef$EF)) + 
+  geom_point(aes(x = units::set_units(19,'km/h')
+                 ,y = cur_local_ef$EF)) + 
   # add local EF text
-  geom_text(aes(x = 19
+  geom_text(aes(x = units::set_units(19,'km/h')
                 , y = cur_local_ef_dt$EF)
             ,label = sprintf('Local EF = %s g/km at 19 km/h',round(cur_local_ef_dt$EF,1))
             ,hjust = 0,nudge_y = 100,nudge_x = 1

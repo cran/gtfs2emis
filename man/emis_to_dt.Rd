@@ -9,6 +9,7 @@ emis_to_dt(
   emi_vars = "emi",
   veh_vars = "veh_type",
   pol_vars = "pollutant",
+  process_vars = "process",
   segment_vars = NULL
 )
 }
@@ -24,6 +25,9 @@ to vehicle characteristics. Default is 'veh_type'.}
 \item{pol_vars}{character. data.frame names of 'emi_list' object attributed
 to pollutants. Default is 'pollutant'.}
 
+\item{process_vars}{character. data.frame names of 'emi_list' object
+attributed to the emission processes. Default is 'process'.}
+
 \item{segment_vars}{character. data.frame names of 'emi_list' object
 attributed to the road segments. Default is NULL.}
 }
@@ -37,8 +41,7 @@ them into a \code{data.table} format.
 }
 \examples{
 \donttest{
-library(gtfs2emis)
-library(gtfstools)
+ if (requireNamespace("gtfstools", quietly=TRUE)) {
 
 # read GTFS
 gtfs_file <- system.file("extdata/bra_cur_gtfs.zip", package = "gtfs2emis")
@@ -71,6 +74,7 @@ emi_list <- emission_model(
 
 # convert emission list to data.table
 dt <- emis_to_dt(emi_list)
+}
 }
 }
 \seealso{

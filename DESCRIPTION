@@ -2,7 +2,7 @@ Type: Package
 Package: gtfs2emis
 Title: Estimating Public Transport Emissions from General Transit Feed
         Specification (GTFS) Data
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(
              person(given = "Joao",
                 family = "Bazzo",
@@ -37,10 +37,10 @@ Suggests: gtfstools, ggplot2, knitr, lwgeom, progressr, rmarkdown,
         testthat (>= 2.1.0)
 VignetteBuilder: knitr
 Encoding: UTF-8
-RoxygenNote: 7.2.1
+RoxygenNote: 7.3.2
 LazyData: true
 NeedsCompilation: no
-Packaged: 2022-11-11 17:54:43 UTC; joaobazzo
+Packaged: 2024-12-02 15:20:51 UTC; joao
 Author: Joao Bazzo [aut, cre] (<https://orcid.org/0000-0003-4536-5006>),
   Rafael H. M. Pereira [aut] (<https://orcid.org/0000-0003-2125-7465>),
   Pedro R. Andrade [aut] (<https://orcid.org/0000-0001-8675-4046>),
@@ -48,4 +48,4 @@ Author: Joao Bazzo [aut, cre] (<https://orcid.org/0000-0003-4536-5006>),
   Ipea - Institute for Applied Economic Research [cph, fnd]
 Maintainer: Joao Bazzo <joao.bazzo@gmail.com>
 Repository: CRAN
-Date/Publication: 2022-11-14 11:30:05 UTC
+Date/Publication: 2024-12-02 15:40:12 UTC

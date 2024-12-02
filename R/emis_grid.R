@@ -24,8 +24,8 @@
 #' 
 #' @examples
 #' \donttest{
-#' library(gtfs2emis)
-#' library(gtfstools)
+#' if (requireNamespace("gtfstools", quietly=TRUE)) {
+#' library(sf)
 #' 
 #' # read GTFS
 #' gtfs_file <- system.file("extdata/bra_cur_gtfs.zip", package = "gtfs2emis")
@@ -67,6 +67,7 @@
 #' plot(grid)
 #' plot(emi_grid["PM10_2010"],add = TRUE)
 #' plot(st_geometry(emi_list$tp_model), add = TRUE,col = "black")
+#' }
 #' }
 #' @export
 emis_grid <- function(emi_list, grid, time_resolution = 'day',quiet = TRUE,aggregate = FALSE){
@@ -124,7 +125,7 @@ emis_grid <- function(emi_list, grid, time_resolution = 'day',quiet = TRUE,aggre
     tmp_emi <- emis_summary(emi_list
                  ,segment_vars = "road_segment")
     tmp_emi <- data.table::dcast(tmp_emi
-                                 ,formula = road_segment ~ pollutant
+                                 ,formula = road_segment ~ pollutant + process 
                                  ,value.var = "emi"
                                  ,fun.aggregate = sum)
     tmp_emi[,road_segment := NULL]

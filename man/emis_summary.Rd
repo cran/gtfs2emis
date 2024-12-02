@@ -8,7 +8,8 @@ emis_summary(
   emi_list,
   by = "pollutant",
   veh_vars = "veh_type",
-  segment_vars = NULL
+  segment_vars = NULL,
+  process_vars = "process"
 )
 }
 \arguments{
@@ -22,6 +23,9 @@ vehicle characteristics. Default is 'veh_type'.}
 
 \item{segment_vars}{character. data.frame names of 'emi_list' object
 attributed to the road segments. Default is NULL.}
+
+\item{process_vars}{character. data.frame names of 'emi_list' object
+attributed to the emission processes. Default is 'process'.}
 }
 \value{
 \code{data.table} with pollutants units ('g') aggregated by pollutant,
@@ -33,9 +37,7 @@ the day, vehicle.
 }
 \examples{
 \donttest{
-
-library(gtfs2emis)
-library(gtfstools)
+if (requireNamespace("gtfstools", quietly=TRUE)) {
 
 # read GTFS
 gtfs_file <- system.file("extdata/irl_dub_gtfs.zip", package = "gtfs2emis")
@@ -81,6 +83,7 @@ emis_summary(emi_list
 emis_summary(emi_list
              , by = "time"
              , segment_vars = "slope") 
+}
 }
 }
 \seealso{
