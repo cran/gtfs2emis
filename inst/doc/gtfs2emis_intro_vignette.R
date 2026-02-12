@@ -4,13 +4,13 @@ knitr::opts_chunk$set(
   comment = "#>")
 
 ## ----eval = FALSE, message = FALSE--------------------------------------------
-#  library(devtools)
-#  # From CRAN
-#  install.packages("gtfs2emis")
-#  
-#  # Dev. version with latest features
-#  # install.packages("remotes")
-#  remotes::install_github("ipeaGIT/gtfs2emis")
+# library(devtools)
+# # From CRAN
+# install.packages("gtfs2emis")
+# 
+# # Dev. version with latest features
+# # install.packages("remotes")
+# remotes::install_github("ipeaGIT/gtfs2emis")
 
 ## -----------------------------------------------------------------------------
 data_path <- system.file("extdata", package = "gtfs2emis")

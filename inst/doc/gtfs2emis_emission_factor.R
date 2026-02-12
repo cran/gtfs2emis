@@ -8,7 +8,7 @@ knitr::opts_chunk$set(
 #devtools::load_all()
 
 ## ----eval = FALSE,message = FALSE---------------------------------------------
-#  #library(gtfs2emis)
+# #library(gtfs2emis)
 
 ## ----message = FALSE----------------------------------------------------------
 library(units)
